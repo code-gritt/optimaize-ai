@@ -6,6 +6,7 @@ import { useAuthStore } from "@/lib/store";
 import { getMe } from "@/lib/mutation";
 import { Button } from "@/components/ui/button";
 import Loader from "@/components/global/loader";
+import { Navbar } from "@/components";
 
 export default function DashboardPage() {
   return (
@@ -69,17 +70,20 @@ function DashboardContent() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen gap-4">
-      <h1 className="text-2xl font-semibold">
-        Welcome, {user.email.split("@")[0]}!
-      </h1>
-      <p className="text-gray-500">Credits: {user.credits}</p>
-      <div className="flex gap-4 mt-4">
-        <Button onClick={() => router.push("/")} variant="outline">
-          Back to Home
-        </Button>
-        <Button onClick={handleLogout}>Sign Out</Button>
+    <>
+      <Navbar />
+      <div className="flex flex-col items-center justify-center h-screen gap-4">
+        <h1 className="text-2xl font-semibold">
+          Welcome, {user.email.split("@")[0]}!
+        </h1>
+        <p className="text-gray-500">Credits: {user.credits}</p>
+        <div className="flex gap-4 mt-4">
+          <Button onClick={() => router.push("/")} variant="outline">
+            Back to Home
+          </Button>
+          <Button onClick={handleLogout}>Sign Out</Button>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
