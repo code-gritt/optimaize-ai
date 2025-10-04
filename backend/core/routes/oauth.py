@@ -1,13 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from core.models.user import User, UserRole
 from core.dependencies.db import get_db
-from core.schemas.user import UserResponse
 from jose import jwt
 from dotenv import load_dotenv
 import os
-import requests
+import httpx
 from datetime import datetime, timedelta
 
 router = APIRouter()
@@ -42,49 +41,56 @@ async def google_login():
         f"&response_type=code"
         f"&scope=email profile"
         f"&access_type=offline"
+        f"&prompt=consent"
     )
     return RedirectResponse(url=google_auth_url)
 
 
 @router.get("/google/callback")
 async def google_callback(code: str, db: Session = Depends(get_db)):
-    # Exchange code for tokens
-    token_url = "https://oauth2.googleapis.com/token"
-    token_data = {
-        "code": code,
-        "client_id": GOOGLE_CLIENT_ID,
-        "client_secret": GOOGLE_CLIENT_SECRET,
-        "redirect_uri": REDIRECT_URI,
-        "grant_type": "authorization_code",
-    }
-    token_response = requests.post(token_url, data=token_data)
-    if token_response.status_code != 200:
-        raise HTTPException(
-            status_code=400, detail="Failed to exchange code for token")
+    async with httpx.AsyncClient() as client:
+        # Exchange code for tokens
+        token_url = "https://oauth2.googleapis.com/token"
+        token_data = {
+            "code": code,
+            "client_id": GOOGLE_CLIENT_ID,
+            "client_secret": GOOGLE_CLIENT_SECRET,
+            "redirect_uri": REDIRECT_URI,
+            "grant_type": "authorization_code",
+        }
+        token_response = await client.post(token_url, data=token_data)
+        if token_response.status_code != 200:
+            detail = token_response.text
+            raise HTTPException(
+                status_code=400, detail=f"Failed to exchange code for token: {detail}")
 
-    token_json = token_response.json()
-    access_token = token_json.get("access_token")
+        token_json = token_response.json()
+        access_token = token_json.get("access_token")
+        if not access_token:
+            raise HTTPException(
+                status_code=400, detail="No access token returned by Google")
 
-    # Fetch user info
-    user_info_url = "https://www.googleapis.com/oauth2/v2/userinfo"
-    user_info_response = requests.get(
-        user_info_url, headers={"Authorization": f"Bearer {access_token}"})
-    if user_info_response.status_code != 200:
-        raise HTTPException(
-            status_code=400, detail="Failed to fetch user info")
+        # Fetch user info
+        user_info_url = "https://www.googleapis.com/oauth2/v2/userinfo"
+        user_info_response = await client.get(
+            user_info_url, headers={"Authorization": f"Bearer {access_token}"}
+        )
+        if user_info_response.status_code != 200:
+            detail = user_info_response.text
+            raise HTTPException(
+                status_code=400, detail=f"Failed to fetch user info: {detail}")
 
-    user_info = user_info_response.json()
-    email = user_info.get("email")
-    if not email:
-        raise HTTPException(
-            status_code=400, detail="Email not provided by Google")
+        user_info = user_info_response.json()
+        email = user_info.get("email")
+        if not email:
+            raise HTTPException(
+                status_code=400, detail="Email not provided by Google")
 
     # Check if user exists, create if not
     user = get_user_by_email(db, email)
     if not user:
         user = User(
             email=email,
-            # Placeholder, as no password is needed
             hashed_password="google_oauth_no_password",
             role=UserRole.USER,
             credits=100
