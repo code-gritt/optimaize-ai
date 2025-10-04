@@ -47,6 +47,7 @@ const Navbar = () => {
           <div className="hidden lg:flex items-center gap-x-4">
             {user && token ? (
               <>
+                <span className="credits ml-2">Credits: {user.credits}</span>
                 <button
                   onClick={() => router.push("/dashboard")}
                   className="rounded-md bg-[#2B892E] px-4 py-2 text-white hover:bg-[#225f22] focus:outline-none focus:ring-2 focus:ring-[#2B892E]"
@@ -59,7 +60,6 @@ const Navbar = () => {
                 >
                   Logout
                 </button>
-                <span className="credits ml-2">Credits: {user.credits}</span>
                 <span className="avatar ml-2">
                   {user.email.charAt(0).toUpperCase()}
                 </span>
