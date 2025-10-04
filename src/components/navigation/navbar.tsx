@@ -49,7 +49,7 @@ const Navbar = () => {
           <div className="flex items-center space-x-12">
             <Link href="/#home" className="flex items-center gap-x-2">
               <Icons.logo className="w-6 h-6" />
-              <h1 className="text-lg font-medium">faria</h1>
+              <h1 className="text-lg font-medium">OptimAIzer</h1>
             </Link>
 
             <NavigationMenu className="hidden lg:flex">

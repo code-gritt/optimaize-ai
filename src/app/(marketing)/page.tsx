@@ -37,28 +37,29 @@ const HomePage = async () => {
               <span className="backdrop absolute inset-[1px] rounded-full bg-neutral-950 transition-colors duration-200 group-hover:bg-neutral-900" />
               <span className="h-full w-full blur-md absolute bottom-0 inset-x-0 bg-gradient-to-tr from-primary/20"></span>
               <span className="z-10 py-0.5 text-sm text-neutral-100 flex items-center justify-center gap-1">
-                ✨ A top-notch template designed for success
+                ✨ AI-Powered Code Review & Debugging for Developers
                 <ArrowRightIcon className="ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5" />
               </span>
             </button>
             <h1 className="text-foreground text-center py-6 text-5xl font-medium tracking-normal text-balance sm:text-6xl md:text-7xl lg:text-8xl !leading-[1.15] w-full font-heading">
-              Premium{" "}
+              Smarter{" "}
               <span className="text-transparent mx-2 bg-gradient-to-r from-violet-500 to-fuchsia-500 bg-clip-text inline-bloc">
-                saas
+                Code Analysis
               </span>
-              template to kickstart your project
+              with OptimAIzer
             </h1>
             <p className="mb-12 text-lg tracking-tight text-muted-foreground md:text-xl text-balance">
-              Effortlessly streamline your link management with Faria.
+              Upload your repositories, detect bugs, and get instant AI-driven
+              insights powered by Gemini’s RAG capabilities.
               <br className="hidden md:block" />
               <span className="hidden md:block">
-                Shorten, track, and organize all your links in one place.
+                Debug, optimize, and collaborate — all from a secure dashboard.
               </span>
             </p>
             <div className="flex items-center justify-center whitespace-nowrap gap-4 z-50">
               <Button asChild>
                 <Link href={"/auth/sign-in"} className="flex items-center">
-                  Start creating for free
+                  Start for free with 100 credits
                   <ArrowRightIcon className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
@@ -69,10 +70,25 @@ const HomePage = async () => {
             delay={0.2}
             className="relative pt-20 pb-20 md:py-32 px-2 bg-transparent w-full"
           >
+            {/* Glow background */}
             <div className="absolute md:top-[10%] left-1/2 gradient w-3/4 -translate-x-1/2 h-1/4 md:h-1/3 inset-0 blur-[5rem] animate-image-glow"></div>
-            <div className="-m-2 rounded-xl p-2 ring-1 ring-inset ring-foreground/20 lg:-m-4 lg:rounded-2xl bg-opacity-50 backdrop-blur-3xl">
+
+            {/* Border container */}
+            <div className="-m-2 rounded-xl p-2 ring-1 ring-inset ring-foreground/20 lg:-m-4 lg:rounded-2xl bg-opacity-50 backdrop-blur-3xl relative">
+              {/* Border animation */}
               <BorderBeam size={250} duration={12} delay={9} />
-              <div className="w-full h-[400px] bg-black"></div>
+
+              {/* Image inside the border */}
+              <div className="relative w-full h-[400px] overflow-hidden rounded-lg">
+                <Image
+                  src="/faria.jpg"
+                  alt="Decorative image"
+                  fill
+                  className="object-cover rounded-lg"
+                />
+              </div>
+
+              {/* Gradients at bottom for blending */}
               <div className="absolute -bottom-4 inset-x-0 w-full h-1/2 bg-gradient-to-t from-background z-40"></div>
               <div className="absolute bottom-0 md:-bottom-8 inset-x-0 w-full h-1/4 bg-gradient-to-t from-background z-50"></div>
             </div>
@@ -86,7 +102,7 @@ const HomePage = async () => {
           <div className="py-14">
             <div className="mx-auto px-4 md:px-8">
               <h2 className="text-center text-sm font-medium font-heading text-neutral-400 uppercase">
-                Trusted by the best in the industry
+                Trusted by modern developers and teams
               </h2>
               <div className="mt-8">
                 <ul className="flex flex-wrap items-center gap-x-6 gap-y-6 md:gap-x-16 justify-center">
@@ -113,13 +129,14 @@ const HomePage = async () => {
       <MaxWidthWrapper className="pt-10">
         <AnimationContainer delay={0.1}>
           <div className="flex flex-col w-full items-center lg:items-center justify-center py-8">
-            <MagicBadge title="Features" />
+            <MagicBadge title="Core Features" />
             <h2 className="text-center lg:text-center text-3xl md:text-5xl !leading-[1.1] font-medium font-heading text-foreground mt-6">
-              Manage Links Like a Pro
+              Accelerate Code Quality with AI
             </h2>
             <p className="mt-4 text-center lg:text-center text-lg text-muted-foreground max-w-lg">
-              Faria is a powerful link management tool that helps you shorten,
-              track, and organize all your links in one place.
+              OptimAIzer empowers developers to review, debug, and optimize code
+              using AI-driven RAG analysis, real-time collaboration, and secure
+              workflows.
             </p>
           </div>
         </AnimationContainer>
@@ -136,13 +153,13 @@ const HomePage = async () => {
       <MaxWidthWrapper className="py-10">
         <AnimationContainer delay={0.1}>
           <div className="flex flex-col items-center lg:items-center justify-center w-full py-8 max-w-xl mx-auto">
-            <MagicBadge title="The Process" />
+            <MagicBadge title="How It Works" />
             <h2 className="text-center lg:text-center text-3xl md:text-5xl !leading-[1.1] font-medium font-heading text-foreground mt-6">
-              Effortless link management in 3 steps
+              Code smarter in 3 simple steps
             </h2>
             <p className="mt-4 text-center lg:text-center text-lg text-muted-foreground max-w-lg">
-              Follow these simple steps to optimize, organize, and share your
-              links with ease.
+              Upload your repository, let our AI analyze it, and get actionable
+              insights for optimization, debugging, and collaboration.
             </p>
           </div>
         </AnimationContainer>
@@ -179,11 +196,11 @@ const HomePage = async () => {
           <div className="flex flex-col items-center lg:items-center justify-center w-full py-8 max-w-xl mx-auto">
             <MagicBadge title="Simple Pricing" />
             <h2 className="text-center lg:text-center text-3xl md:text-5xl !leading-[1.1] font-medium font-heading text-foreground mt-6">
-              Choose a plan that works for you
+              Flexible plans to fit every developer
             </h2>
             <p className="mt-4 text-center lg:text-center text-lg text-muted-foreground max-w-lg">
-              Get started with Faria today and enjoy more features with our pro
-              plans.
+              Start with 100 free credits and scale your AI-powered analysis as
+              your project grows — no hidden costs, no surprises.
             </p>
           </div>
         </AnimationContainer>
@@ -195,7 +212,7 @@ const HomePage = async () => {
             <div className="flex items-center gap-2">
               <CreditCardIcon className="w-5 h-5 text-foreground" />
               <span className="text-muted-foreground">
-                No credit card required
+                No credit card required to start
               </span>
             </div>
           </div>
@@ -206,12 +223,13 @@ const HomePage = async () => {
       <MaxWidthWrapper className="py-10">
         <AnimationContainer delay={0.1}>
           <div className="flex flex-col items-center lg:items-center justify-center w-full py-8 max-w-xl mx-auto">
-            <MagicBadge title="Our Customers" />
+            <MagicBadge title="User Feedback" />
             <h2 className="text-center lg:text-center text-3xl md:text-5xl !leading-[1.1] font-medium font-heading text-foreground mt-6">
-              What our users are saying
+              Developers love OptimAIzer
             </h2>
             <p className="mt-4 text-center lg:text-center text-lg text-muted-foreground max-w-lg">
-              Here&apos;s what some of our users have to say about Faria.
+              See how OptimAIzer helps teams ship cleaner, faster, and smarter
+              code with AI-assisted insights.
             </p>
           </div>
         </AnimationContainer>
@@ -306,16 +324,15 @@ const HomePage = async () => {
           <LampContainer>
             <div className="flex flex-col items-center justify-center relative w-full text-center">
               <h2 className="bg-gradient-to-b from-neutral-200 to-neutral-400 py-4 bg-clip-text text-center text-4xl md:text-7xl !leading-[1.15] font-medium font-heading tracking-tight text-transparent mt-8">
-                Step into the future of link management
+                Step into the future of intelligent code analysis
               </h2>
               <p className="text-muted-foreground mt-6 max-w-md mx-auto">
-                Experience the cutting-edge solution that transforms how you
-                handle your links. Elevate your online presence with our
-                next-gen platform.
+                Experience AI-powered debugging and collaborative code review
+                with OptimAIzer. Learn, improve, and ship better code — faster.
               </p>
               <div className="mt-6">
                 <Button>
-                  Get started for free
+                  Start analyzing for free
                   <ArrowRightIcon className="w-4 h-4 ml-2" />
                 </Button>
               </div>

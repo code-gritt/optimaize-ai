@@ -1,23 +1,23 @@
 export const PLANS = [
   {
     name: "Free",
-    info: "For most individuals",
+    info: "For individual developers",
     price: {
       monthly: 0,
       yearly: 0,
     },
     features: [
-      { text: "Shorten links" },
-      { text: "Up to 100 tags", limit: "100 tags" },
-      { text: "Customizable branded links" },
-      { text: "Track clicks", tooltip: "1K clicks/month" },
+      { text: "AI code review (basic ruleset)" },
+      { text: "Analyze up to 100 files", limit: "100 files" },
+      { text: "Syntax and bug detection" },
+      { text: "Performance insights", tooltip: "Limited to 50 reports/month" },
       {
         text: "Community support",
-        tooltip: "Get answers your questions on discord",
+        tooltip: "Get help and share tips with other developers on Discord",
       },
       {
-        text: "AI powered suggestions",
-        tooltip: "Get up to 100 AI powered suggestions",
+        text: "AI optimization tips",
+        tooltip: "Receive up to 100 AI-powered improvement suggestions",
       },
     ],
     btn: {
@@ -28,21 +28,21 @@ export const PLANS = [
   },
   {
     name: "Pro",
-    info: "For small businesses",
+    info: "For teams and small startups",
     price: {
       monthly: 9,
       yearly: Math.round(9 * 12 * (1 - 0.12)),
     },
     features: [
-      { text: "Shorten links" },
-      { text: "Up to 500 tags", limit: "500 tags" },
-      { text: "Customizable branded links" },
-      { text: "Track clicks", tooltip: "20K clicks/month" },
-      { text: "Export click data", tooltip: "Upto 1K links" },
-      { text: "Priority support", tooltip: "Get 24/7 chat support" },
+      { text: "Advanced AI code review" },
+      { text: "Analyze up to 1,000 files", limit: "1,000 files" },
+      { text: "Automated bug detection & refactoring" },
+      { text: "Performance analytics", tooltip: "Up to 500 reports/month" },
+      { text: "Export review reports", tooltip: "Up to 1,000 projects" },
+      { text: "Priority support", tooltip: "Access 24/7 developer chat" },
       {
-        text: "AI powered suggestions",
-        tooltip: "Get up to 500 AI powered suggestions",
+        text: "AI optimization tips",
+        tooltip: "Get up to 500 AI-powered recommendations",
       },
     ],
     btn: {
@@ -53,24 +53,24 @@ export const PLANS = [
   },
   {
     name: "Business",
-    info: "For large organizations",
+    info: "For engineering organizations",
     price: {
       monthly: 49,
       yearly: Math.round(49 * 12 * (1 - 0.12)),
     },
     features: [
-      { text: "Shorten links" },
-      { text: "Unlimited tags" },
-      { text: "Customizable branded links" },
-      { text: "Track clicks", tooltip: "Unlimited clicks" },
-      { text: "Export click data", tooltip: "Unlimited clicks" },
+      { text: "Enterprise-grade AI review engine" },
+      { text: "Unlimited code analysis" },
+      { text: "Deep debugging insights" },
+      { text: "Performance & security audits", tooltip: "Unlimited reports" },
+      { text: "Export review data", tooltip: "Unlimited projects" },
       {
-        text: "Dedicated manager",
-        tooltip: "Get priority support from our team",
+        text: "Dedicated success manager",
+        tooltip: "Priority onboarding and 1:1 technical support",
       },
       {
-        text: "AI powered suggestions",
-        tooltip: "Get unlimited AI powered suggestions",
+        text: "AI optimization tips",
+        tooltip: "Unlimited AI-powered refactoring and insights",
       },
     ],
     btn: {
@@ -83,32 +83,32 @@ export const PLANS = [
 
 export const PRICING_FEATURES = [
   {
-    text: "Shorten links",
-    tooltip: "Create shortened links",
+    text: "AI code review",
+    tooltip: "Automatically detect issues and anti-patterns",
   },
   {
-    text: "Track clicks",
-    tooltip: "Track clicks on your links",
+    text: "Performance analytics",
+    tooltip: "Measure and improve runtime efficiency",
   },
   {
-    text: "See top countries",
-    tooltip: "See top countries where your links are clicked",
+    text: "Security scanning",
+    tooltip: "Identify potential vulnerabilities in your code",
   },
   {
-    text: "Upto 10 tags",
-    tooltip: "Add upto 10 tags to your links",
+    text: "Up to 10 projects",
+    tooltip: "Analyze up to 10 repositories or projects",
   },
   {
     text: "Community support",
-    tooltip: "Community support is available for free users",
+    tooltip: "Access the developer community for guidance",
   },
   {
     text: "Priority support",
-    tooltip: "Get priority support from our team",
+    tooltip: "Get fast responses from our technical team",
   },
   {
-    text: "AI powered suggestions",
-    tooltip: "Get AI powered suggestions for your links",
+    text: "AI optimization tips",
+    tooltip: "Receive AI-powered recommendations to refactor code",
   },
 ];
 

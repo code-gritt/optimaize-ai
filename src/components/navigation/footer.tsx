@@ -14,17 +14,8 @@ const Footer = () => {
               <Icons.logo className="w-7 h-7" />
             </div>
             <p className="text-muted-foreground mt-4 text-sm text-start">
-              Manage your links with ease.
+              Optimize and manage your links with AI-powered insights.
             </p>
-            <span className="mt-4 text-neutral-200 text-sm flex items-center">
-              Made by{" "}
-              <Link
-                href="https://github.com/chrhi"
-                className="font-semibold ml-1"
-              >
-                Abdellah
-              </Link>
-            </span>
           </div>
         </AnimationContainer>
 
@@ -36,7 +27,7 @@ const Footer = () => {
                 <ul className="mt-4 text-sm text-muted-foreground">
                   <li className="mt-2">
                     <Link
-                      href=""
+                      href="/features"
                       className="hover:text-foreground transition-all duration-300"
                     >
                       Features
@@ -44,7 +35,7 @@ const Footer = () => {
                   </li>
                   <li className="mt-2">
                     <Link
-                      href=""
+                      href="/pricing"
                       className="hover:text-foreground transition-all duration-300"
                     >
                       Pricing
@@ -52,7 +43,7 @@ const Footer = () => {
                   </li>
                   <li className="mt-2">
                     <Link
-                      href=""
+                      href="/testimonials"
                       className="hover:text-foreground transition-all duration-300"
                     >
                       Testimonials
@@ -60,10 +51,10 @@ const Footer = () => {
                   </li>
                   <li className="mt-2">
                     <Link
-                      href=""
+                      href="/integrations"
                       className="hover:text-foreground transition-all duration-300"
                     >
-                      Integration
+                      Integrations
                     </Link>
                   </li>
                 </ul>
@@ -75,9 +66,9 @@ const Footer = () => {
                   Integrations
                 </h3>
                 <ul className="mt-4 text-sm text-muted-foreground">
-                  <li className="">
+                  <li>
                     <Link
-                      href=""
+                      href="/integrations/facebook"
                       className="hover:text-foreground transition-all duration-300"
                     >
                       Facebook
@@ -85,7 +76,7 @@ const Footer = () => {
                   </li>
                   <li className="mt-2">
                     <Link
-                      href=""
+                      href="/integrations/instagram"
                       className="hover:text-foreground transition-all duration-300"
                     >
                       Instagram
@@ -93,7 +84,7 @@ const Footer = () => {
                   </li>
                   <li className="mt-2">
                     <Link
-                      href=""
+                      href="/integrations/twitter"
                       className="hover:text-foreground transition-all duration-300"
                     >
                       Twitter
@@ -101,7 +92,7 @@ const Footer = () => {
                   </li>
                   <li className="mt-2">
                     <Link
-                      href=""
+                      href="/integrations/linkedin"
                       className="hover:text-foreground transition-all duration-300"
                     >
                       LinkedIn
@@ -139,9 +130,9 @@ const Footer = () => {
               <div className="mt-10 md:mt-0 flex flex-col">
                 <h3 className="text-base font-medium text-white">Company</h3>
                 <ul className="mt-4 text-sm text-muted-foreground">
-                  <li className="">
+                  <li>
                     <Link
-                      href=""
+                      href="/about"
                       className="hover:text-foreground transition-all duration-300"
                     >
                       About Us
@@ -173,13 +164,14 @@ const Footer = () => {
       <div className="mt-8 border-t border-border/40 pt-4 md:pt-8 md:flex md:items-center md:justify-between w-full">
         <AnimationContainer delay={0.6}>
           <p className="text-sm text-muted-foreground mt-8 md:mt-0">
-            &copy; {new Date().getFullYear()} Faria INC. All rights reserved.
+            &copy; {new Date().getFullYear()} OptimAIzer INC. All rights
+            reserved.
           </p>
         </AnimationContainer>
       </div>
 
       <div className="h-[20rem] lg:h-[20rem] hidden md:flex items-center justify-center">
-        <TextHoverEffect text="Faria" />
+        <TextHoverEffect text="OptimAIzer" />
       </div>
     </footer>
   );

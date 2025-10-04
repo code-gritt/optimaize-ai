@@ -1,38 +1,38 @@
 [
-    {
-        "title": "How to Maximize Your Productivity with Link Management Tools",
-        "image": "/assets/blog1.jpg",
-        "author_image": "https://example.com/images/author1.jpg",
-        "author_name": "John Doe",
-        "date_published": "2024-10-05",
-        "description": "Learn how to maximize your productivity with link management tools.",
-        "slug": "how-to-maximize-your-productivity-with-link-management-tools"
-    },
-    {
-        "title": "The Ultimate Guide to Organizing Links for Teams",
-        "image": "/assets/blog2.jpg",
-        "author_image": "https://example.com/images/author2.jpg",
-        "author_name": "Jane Smith",
-        "date_published": "2024-09-28",
-        "description": "How to organize links for teams.",
-        "slug": "the-ultimate-guide-to-organizing-links-for-teams"
-    },
-    {
-        "title": "Why Link Management is Essential for Digital Marketers",
-        "image": "/assets/blog3.jpg",
-        "author_image": "https://example.com/images/author3.jpg",
-        "author_name": "Chris Martin",
-        "date_published": "2024-09-20",
-        "description": "Link management is essential for digital marketers.",
-        "slug": "why-link-management-is-essential-for-digital-marketers"
-    },
-    {
-        "title": "Top 5 Features Every Link Management Software Should Have",
-        "image": "/assets/blog4.jpg",
-        "author_image": "https://example.com/images/author4.jpg",
-        "author_name": "Emily Clark",
-        "date_published": "2024-09-15",
-        "description": "The features that every link management software should have.",
-        "slug": "top-5-features-every-link-management-software-should-have"
-    }
+  {
+    "title": "How to Boost Developer Productivity with AI Code Review",
+    "image": "/assets/blog1.jpg",
+    "author_image": "https://example.com/images/author1.jpg",
+    "author_name": "John Doe",
+    "date_published": "2024-10-05",
+    "description": "Discover how AI-powered code review tools like OptimAIzer can help developers write cleaner, faster, and more reliable code.",
+    "slug": "how-to-boost-developer-productivity-with-ai-code-review"
+  },
+  {
+    "title": "The Ultimate Guide to Collaborative Debugging with AI",
+    "image": "/assets/blog2.jpg",
+    "author_image": "https://example.com/images/author2.jpg",
+    "author_name": "Jane Smith",
+    "date_published": "2024-09-28",
+    "description": "Learn how teams can use AI-driven debugging and RAG technology to solve issues faster and ship better code together.",
+    "slug": "the-ultimate-guide-to-collaborative-debugging-with-ai"
+  },
+  {
+    "title": "Why Every Dev Team Needs AI-Powered Code Analysis",
+    "image": "/assets/blog3.jpg",
+    "author_image": "https://example.com/images/author3.jpg",
+    "author_name": "Chris Martin",
+    "date_published": "2024-09-20",
+    "description": "Explore how AI-powered analysis helps detect bugs, optimize performance, and maintain cleaner repositories effortlessly.",
+    "slug": "why-every-dev-team-needs-ai-powered-code-analysis"
+  },
+  {
+    "title": "Top 5 Features Every AI Debugging Platform Should Have",
+    "image": "/assets/blog4.jpg",
+    "author_image": "https://example.com/images/author4.jpg",
+    "author_name": "Emily Clark",
+    "date_published": "2024-09-15",
+    "description": "A breakdown of the must-have features in modern AI debugging tools for efficient, intelligent, and secure code management.",
+    "slug": "top-5-features-every-ai-debugging-platform-should-have"
+  }
 ]

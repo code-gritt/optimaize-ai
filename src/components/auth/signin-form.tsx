@@ -18,7 +18,7 @@ const SignInForm = () => {
 
   return (
     <div className="flex flex-col items-start gap-y-6 py-8 w-full px-0.5">
-      <h2 className="text-2xl font-semibold">Sign in to Faria</h2>
+      <h2 className="text-2xl font-semibold">Sign in to OptimAIzer</h2>
 
       <form onSubmit={handleSignIn} className="w-full">
         <div className="space-y-2 w-full">
