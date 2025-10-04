@@ -6,6 +6,7 @@ import { useAuthStore } from "@/lib/store";
 import { getMe } from "@/lib/mutation";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components";
+import Loader from "@/components/global/loader";
 
 const DashboardPage = () => {
   const { user, token, setUser, clearAuth } = useAuthStore();
@@ -43,7 +44,11 @@ const DashboardPage = () => {
   };
 
   if (loading) {
-    return <p className="text-center mt-8">Loading...</p>;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loader text="Loading Dashboard" size={150} />
+      </div>
+    );
   }
 
   if (!user) {

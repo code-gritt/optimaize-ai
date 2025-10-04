@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Eye, EyeOff, LoaderIcon } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -11,6 +11,7 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "../ui/input-otp";
 import { Label } from "../ui/label";
 import { register, login, getMe } from "@/lib/mutation";
 import { useAuthStore } from "@/lib/store";
+import Loader from "../global/loader";
 
 const SignUpForm = () => {
   const router = useRouter();
@@ -61,6 +62,11 @@ const SignUpForm = () => {
     setIsVerifying(false);
   };
 
+  if (isLoading)
+    return (
+      <Loader text={isVerifying ? "Verifying" : "Signing up"} size={220} />
+    );
+
   return isVerifying ? (
     <div className="flex flex-col items-start w-full text-start gap-y-6 py-8 px-0.5">
       <h2 className="text-2xl font-semibold">Verify your account</h2>
@@ -90,12 +96,8 @@ const SignUpForm = () => {
           </InputOTP>
         </div>
         <div className="mt-4 w-full">
-          <Button type="submit" disabled={isLoading} className="w-full">
-            {isLoading ? (
-              <LoaderIcon className="w-5 h-5 animate-spin" />
-            ) : (
-              "Verify code"
-            )}
+          <Button type="submit" className="w-full">
+            Verify code
           </Button>
         </div>
         <p className="text-sm text-muted-foreground mt-4">
@@ -171,11 +173,7 @@ const SignUpForm = () => {
 
         <div className="mt-4 w-full">
           <Button type="submit" className="w-full">
-            {isLoading ? (
-              <LoaderIcon className="w-5 h-5 animate-spin" />
-            ) : (
-              "Sign Up"
-            )}
+            Sign Up
           </Button>
         </div>
       </form>

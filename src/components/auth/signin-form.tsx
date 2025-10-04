@@ -2,12 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Eye, EyeOff, LoaderIcon } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import React, { useState } from "react";
 import { Label } from "../ui/label";
 import { useAuthStore } from "@/lib/store";
 import { login, getMe } from "@/lib/mutation";
 import { useRouter } from "next/navigation";
+import Loader from "../global/loader";
 
 const SignInForm = () => {
   const [email, setEmail] = useState<string>("");
@@ -45,7 +46,9 @@ const SignInForm = () => {
   };
 
   return (
-    <div className="flex flex-col items-start gap-y-6 py-8 w-full px-0.5">
+    <div className="flex flex-col items-start gap-y-6 py-8 w-full px-0.5 relative">
+      {isLoading && <Loader text="Signing in" size={220} />}
+
       <h2 className="text-2xl font-semibold">Sign in to OptimAIzer</h2>
 
       <form onSubmit={handleSignIn} className="w-full">
@@ -92,11 +95,7 @@ const SignInForm = () => {
 
         <div className="mt-4 w-full flex flex-col gap-2">
           <Button type="submit" className="w-full">
-            {isLoading ? (
-              <LoaderIcon className="w-5 h-5 animate-spin" />
-            ) : (
-              "Sign in with email"
-            )}
+            {isLoading ? "Signing in..." : "Sign in with email"}
           </Button>
           <Button
             type="button"
