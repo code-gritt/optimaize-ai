@@ -15,8 +15,8 @@ router = APIRouter()
 load_dotenv()
 GOOGLE_CLIENT_ID = "57557206677-8ucu2ivbv0cffvv9m9qomr2jb1370ovi.apps.googleusercontent.com"
 GOOGLE_CLIENT_SECRET = "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"
-REDIRECT_URI = os.getenv("REDIRECT_URI")
-FRONTEND_URL = os.getenv("FRONTEND_URL")
+REDIRECT_URI = "https://optimaize-api.onrender.com/oauth/google/callback"
+FRONTEND_URL = "https://optimaize-api.onrender.com"
 SECRET_KEY = "cbc939eedd96ed9e6b5e0c60712dc29cf9d4eacbde45d0c0b0066e87b51bde7d"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
