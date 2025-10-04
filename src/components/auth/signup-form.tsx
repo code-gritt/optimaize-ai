@@ -33,19 +33,14 @@ const SignUpForm = () => {
     setError("");
 
     try {
-      // Register user
       await register(email, password);
 
-      // Immediately log in
       const token = await login(email, password);
       const user = await getMe(token);
 
       if (!user) throw new Error("Failed to fetch user data");
 
-      // Update auth store
       setAuth(user, token);
-
-      // Redirect to dashboard
       router.push("/dashboard");
     } catch (err: any) {
       console.error("Sign-up error:", err);
@@ -101,7 +96,7 @@ const SignUpForm = () => {
           </Button>
         </div>
         <p className="text-sm text-muted-foreground mt-4">
-          Didn't receive the code?{" "}
+          Didn&apos;t receive the code?{" "}
           <Link
             href="#"
             onClick={(e) => {
