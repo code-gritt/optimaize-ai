@@ -11,7 +11,7 @@ app = FastAPI(title="Optimaize Backend", version="1.0")
 
 # --- CORS ---
 origins = [
-    "https://optimaize-omega.vercel.app",
+    "https://optimaizer.vercel.app",
     "http://localhost:3000",
 ]
 
