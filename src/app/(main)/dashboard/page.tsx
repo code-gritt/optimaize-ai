@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/lib/store";
 import { getMe } from "@/lib/mutation";
 import { Button } from "@/components/ui/button";
@@ -9,34 +9,41 @@ import { Navbar } from "@/components";
 import Loader from "@/components/global/loader";
 
 const DashboardPage = () => {
-  const { user, token, setUser, clearAuth } = useAuthStore();
+  const { user, token, setUser, setAuth, clearAuth } = useAuthStore();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Fetch user data on mount
   useEffect(() => {
-    const fetchUser = async () => {
-      if (!token) {
-        router.push("/login");
-        return;
-      }
+    const tokenFromUrl = searchParams.get("token");
 
+    const fetchUser = async (authToken: string) => {
       try {
-        const fetchedUser = await getMe(token);
+        const fetchedUser = await getMe(authToken);
         if (!fetchedUser) throw new Error("User not authenticated");
+
         setUser(fetchedUser);
+        if (tokenFromUrl) setAuth(fetchedUser, authToken); // Update store if from OAuth
+        if (tokenFromUrl) router.replace("/dashboard"); // Clean URL
       } catch (err: any) {
         setError(err.message || "Failed to load dashboard");
-        if (err.message.includes("not authenticated")) router.push("/login");
+        clearAuth();
+        router.push("/login");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUser();
-  }, [token, router, setUser]);
+    if (tokenFromUrl) {
+      fetchUser(tokenFromUrl);
+    } else if (token) {
+      fetchUser(token);
+    } else {
+      router.push("/login");
+    }
+  }, [token, searchParams, router, setUser, setAuth, clearAuth]);
 
   const handleLogout = () => {
     clearAuth();
