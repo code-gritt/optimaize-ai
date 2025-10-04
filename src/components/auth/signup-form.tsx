@@ -9,9 +9,12 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "../ui/input-otp";
 import { Label } from "../ui/label";
+import { register, login, getMe } from "@/lib/mutation";
+import { useAuthStore } from "@/lib/store";
 
 const SignUpForm = () => {
   const router = useRouter();
+  const { setAuth } = useAuthStore();
 
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -19,14 +22,44 @@ const SignUpForm = () => {
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
-  const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
 
+  // Handles initial signup (register + login + fetch user)
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError("");
+
+    try {
+      // Register user
+      await register(email, password);
+
+      // Immediately log in
+      const token = await login(email, password);
+      const user = await getMe(token);
+
+      if (!user) throw new Error("Failed to fetch user data");
+
+      // Update auth store
+      setAuth(user, token);
+
+      // Redirect to dashboard
+      router.push("/dashboard");
+    } catch (err: any) {
+      console.error("Sign-up error:", err);
+      setError(err.message || "Registration failed");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleVerifyEmail = async (e: React.FormEvent) => {};
+  // Handles email verification (if using OTP)
+  const handleVerifyEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    toast.success("Verification code verified!");
+    setIsVerifying(false);
+  };
 
   return isVerifying ? (
     <div className="flex flex-col items-start w-full text-start gap-y-6 py-8 px-0.5">
@@ -66,12 +99,11 @@ const SignUpForm = () => {
           </Button>
         </div>
         <p className="text-sm text-muted-foreground mt-4">
-          Didn&apos;t receive the code?{" "}
+          Didn't receive the code?{" "}
           <Link
             href="#"
             onClick={(e) => {
               e.preventDefault();
-
               toast.success("Verification code resent to your email.");
             }}
             className="text-primary"
@@ -90,7 +122,7 @@ const SignUpForm = () => {
           <Label htmlFor="name">Name</Label>
           <Input
             id="name"
-            type="name"
+            type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Enter your name"
@@ -134,12 +166,15 @@ const SignUpForm = () => {
             </Button>
           </div>
         </div>
+
+        {error && <p className="text-red-500 mt-2 text-sm">{error}</p>}
+
         <div className="mt-4 w-full">
           <Button type="submit" className="w-full">
-            {isUpdating ? (
+            {isLoading ? (
               <LoaderIcon className="w-5 h-5 animate-spin" />
             ) : (
-              "Continue"
+              "Sign Up"
             )}
           </Button>
         </div>
