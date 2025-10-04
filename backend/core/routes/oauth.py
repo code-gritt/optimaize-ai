@@ -13,8 +13,8 @@ from datetime import datetime, timedelta
 router = APIRouter()
 
 load_dotenv()
-GOOGLE_CLIENT_ID = "518989484475-r0rtrsoehtt8ig079dkl7ce2mio9jj64.apps.googleusercontent.com"
-GOOGLE_CLIENT_SECRET = "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"
+GOOGLE_CLIENT_ID = "57557206677-8ucu2ivbv0cffvv9m9qomr2jb1370ovi.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET = "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"
 REDIRECT_URI = os.getenv("REDIRECT_URI")
 FRONTEND_URL = os.getenv("FRONTEND_URL")
 SECRET_KEY = "cbc939eedd96ed9e6b5e0c60712dc29cf9d4eacbde45d0c0b0066e87b51bde7d"
