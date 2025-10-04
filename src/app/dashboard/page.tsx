@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/lib/store";
 import { getMe } from "@/lib/mutation";
 import { Button } from "@/components/ui/button";
-import { Suspense } from "react";
 import Loader from "@/components/global/loader";
 
 export default function DashboardPage() {
@@ -31,9 +30,8 @@ function DashboardContent() {
 
     const fetchUser = async (authToken: string) => {
       try {
-        const fetchedUser = await getMe(authToken);
-        if (!fetchedUser) throw new Error("User not authenticated");
-        setAuth(fetchedUser, authToken);
+        const userData = await getMe(authToken);
+        setAuth(userData, authToken);
       } catch (err: any) {
         console.error("Dashboard fetch error:", err);
         setError(err.message || "Failed to load dashboard");
@@ -46,7 +44,7 @@ function DashboardContent() {
 
     if (tokenFromUrl) {
       fetchUser(tokenFromUrl);
-      router.replace("/dashboard");
+      router.replace("/dashboard"); // remove token from URL
     } else if (token) {
       fetchUser(token);
     } else {
@@ -60,9 +58,7 @@ function DashboardContent() {
     router.push("/login");
   };
 
-  if (loading) {
-    return null; // Suspense handles the loading state
-  }
+  if (loading) return null; // handled by Suspense
 
   if (!user) {
     return (
