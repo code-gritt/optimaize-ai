@@ -36,7 +36,7 @@ function DashboardContent() {
         console.error("Dashboard fetch error:", err);
         setError(err.message || "Failed to load dashboard");
         clearAuth();
-        router.push("/login");
+        router.push("/auth/sign-in");
       } finally {
         setLoading(false);
       }
@@ -48,14 +48,14 @@ function DashboardContent() {
     } else if (token) {
       fetchUser(token);
     } else {
-      router.push("/login");
+      router.push("/auth/sign-in");
       setLoading(false);
     }
   }, [token, searchParams, router, setAuth, clearAuth]);
 
   const handleLogout = () => {
     clearAuth();
-    router.push("/login");
+    router.push("/auth/sign-in");
   };
 
   if (loading) return null; // handled by Suspense

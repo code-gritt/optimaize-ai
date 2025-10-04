@@ -25,7 +25,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     clearAuth();
-    router.push("/login");
+    router.push("/auth/sign-in");
   };
 
   return (
