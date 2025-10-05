@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from strawberry import Schema, Mutation
+from strawberry import mutation
 import strawberry
 from core.models.activity import Activity
 from core.dependencies.db import get_db
@@ -41,7 +41,7 @@ class UpdateActivityInput:
 
 @strawberry.type
 class ActivityMutation:
-    @strawberry.mutation
+    @mutation
     async def create_activity(self, info, input: CreateActivityInput) -> ActivityResponse:
         db: Session = info.context["db"]
         try:
@@ -54,7 +54,7 @@ class ActivityMutation:
             db.rollback()
             return ActivityResponse(success=False, activity=None, error=str(e))
 
-    @strawberry.mutation
+    @mutation
     async def update_activity(self, info, input: UpdateActivityInput) -> ActivityResponse:
         db: Session = info.context["db"]
         try:
@@ -72,7 +72,7 @@ class ActivityMutation:
             db.rollback()
             return ActivityResponse(success=False, activity=None, error=str(e))
 
-    @strawberry.mutation
+    @mutation
     async def delete_activity(self, info, id: int) -> ActivityResponse:
         db: Session = info.context["db"]
         try:
@@ -87,8 +87,5 @@ class ActivityMutation:
             return ActivityResponse(success=False, activity=None, error=str(e))
 
 
-# Integrate with existing schema
-schema = strawberry.Schema(query=None, mutation=ActivityMutation())
-graphql_app = GraphQLRouter(
-    schema, context_getter=lambda: {"db": next(get_db())})
-router.include_router(graphql_app, prefix="/graphql/activity")
+# Export mutation class for schema combination
+ActivityMutationType = ActivityMutation

@@ -4,7 +4,7 @@ from strawberry.fastapi import GraphQLRouter
 import strawberry
 from core.routes import auth
 from core.routes.oauth import router as oauth_router
-from core.routes.activity import router as activity_router  # New import
+from core.routes.activity import ActivityMutationType  # Import mutation type
 from core.dependencies.db import get_db, Base, engine
 
 # --- FastAPI App ---
@@ -25,10 +25,17 @@ app.add_middleware(
 )
 
 # --- Initialize DB ---
-Base.metadata.create_all(bind=engine)
 
-# --- GraphQL Schema ---
-schema = strawberry.Schema(query=auth.Query, mutation=auth.Mutation)
+
+@app.on_event("startup")
+async def startup_event():
+    Base.metadata.create_all(bind=engine)
+
+# --- Combined GraphQL Schema ---
+schema = strawberry.Schema(
+    query=auth.Query,
+    mutation=ActivityMutationType  # Combine with existing auth mutations if any
+)
 
 # --- GraphQL Router with DB context ---
 
@@ -46,10 +53,6 @@ app.include_router(graphql_app, prefix="/graphql")
 
 # --- OAuth Router ---
 app.include_router(oauth_router, prefix="/oauth")
-
-# --- Activity Router ---
-# Combine with existing GraphQL prefix
-app.include_router(activity_router, prefix="/graphql")
 
 # --- Health Route ---
 
