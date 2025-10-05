@@ -78,7 +78,8 @@ class UploadMutation:
                     code = resp.text
 
             # Analyze code using Gemini
-            model = genai.GenerativeModel("gemini-pro")
+            model = genai.GenerativeModel("gemini-1.5-flash")
+
             # limit to 50k chars
             prompt = f"Analyze this code for bugs, suggestions, and optimizations:\n\n{code[:50000]}"
             gemini_resp = model.generate_content(prompt)
