@@ -16,6 +16,7 @@ interface Activity {
 }
 
 interface UploadResponse {
+  activity: boolean;
   success: boolean;
   analysis: string;
   error?: string;

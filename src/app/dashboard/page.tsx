@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/lib/store";
-import { getMe } from "@/lib/mutation";
+import { getMe, uploadUrl } from "@/lib/mutation";
 import { Button } from "@/components/ui/button";
 import Loader from "@/components/global/loader";
 import { Navbar } from "@/components";
@@ -26,12 +26,20 @@ import { Edit, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+// Define interfaces
 interface Activity {
   id: number;
   userId: number;
   activityType: string;
   details: string | null;
   timestamp: string;
+}
+
+interface UploadResponse {
+  success: boolean;
+  analysis?: string;
+  error?: string;
+  activity?: Activity; // Optional activity field
 }
 
 const GRAPHQL_API_URL = "https://optimaize-api.onrender.com/graphql";
@@ -50,7 +58,7 @@ function DashboardContent() {
   const searchParams = useSearchParams();
 
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -67,17 +75,17 @@ function DashboardContent() {
   });
   const [repoUrl, setRepoUrl] = useState("");
 
+  // Fetch user and activities
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     const tokenFromUrl = searchParams.get("token");
 
-    const fetchUserAndActivities = async (authToken: string | null) => {
+    const fetchUserAndActivities = async (authToken: string) => {
       try {
-        if (!user?.id) throw new Error("User ID not available");
-
-        const userData = await getMe(authToken!);
-        setAuth(userData, authToken!);
+        if (!authToken) throw new Error("No authentication token");
+        const userData = await getMe(authToken);
+        setAuth(userData, authToken);
         await fetchActivities(authToken);
       } catch (err: any) {
         console.error("Dashboard fetch error:", err);
@@ -89,7 +97,7 @@ function DashboardContent() {
       }
     };
 
-    const fetchActivities = async (authToken: string | null) => {
+    const fetchActivities = async (authToken: string) => {
       const query = `
         query GetActivities($userId: Int!) {
           activities(userId: $userId) {
@@ -102,11 +110,11 @@ function DashboardContent() {
         }
       `;
       try {
-        const variables = { userId: user!.id };
+        const variables = { userId: user?.id ?? 0 };
         const data = await graphqlRequest<{ activities: Activity[] }>(
           query,
           variables,
-          authToken || undefined
+          authToken
         );
         setActivities(data.activities || []);
       } catch (err: any) {
@@ -126,19 +134,16 @@ function DashboardContent() {
     }
   }, [token, searchParams, router, setAuth, clearAuth, user?.id]);
 
-  // --- Logout ---
+  // Logout
   const handleLogout = () => {
     clearAuth();
     router.push("/auth/sign-in");
   };
 
-  // --- Edit Activity ---
+  // Edit Activity
   const handleEdit = (activity: Activity) => {
     setSelectedActivity(activity);
-    setEditForm({
-      ...activity,
-      details: activity.details || "",
-    });
+    setEditForm({ ...activity, details: activity.details || "" });
     setEditDialogOpen(true);
   };
 
@@ -168,19 +173,21 @@ function DashboardContent() {
           details: editForm.details,
         },
       };
-
       const data = await graphqlRequest<{
         updateActivity: {
           success: boolean;
           activity: Activity;
-          error: string | null;
+          error?: string;
         };
       }>(mutation, variables, token);
 
       if (data.updateActivity.success && data.updateActivity.activity) {
-        const updated = data.updateActivity.activity;
         setActivities((prev) =>
-          prev.map((a) => (a.id === updated.id ? updated : a))
+          prev.map((a) =>
+            a.id === data.updateActivity.activity.id
+              ? data.updateActivity.activity
+              : a
+          )
         );
         setEditDialogOpen(false);
       } else {
@@ -191,7 +198,7 @@ function DashboardContent() {
     }
   };
 
-  // --- Delete Activity ---
+  // Delete Activity
   const handleDelete = (activity: Activity) => {
     setSelectedActivity(activity);
     setDeleteDialogOpen(true);
@@ -211,7 +218,7 @@ function DashboardContent() {
     try {
       const variables = { id: selectedActivity.id };
       const data = await graphqlRequest<{
-        deleteActivity: { success: boolean; error: string | null };
+        deleteActivity: { success: boolean; error?: string };
       }>(mutation, variables, token);
 
       if (data.deleteActivity.success) {
@@ -227,52 +234,7 @@ function DashboardContent() {
     }
   };
 
-  // --- Upload Repo ---
-  const handleUpload = async () => {
-    if (!repoUrl || !token || !user) return;
-
-    const mutation = `
-      mutation CreateActivity($input: CreateActivityInput!) {
-        createActivity(input: $input) {
-          success
-          activity {
-            id
-            userId
-            activityType
-            details
-            timestamp
-          }
-          error
-        }
-      }
-    `;
-    try {
-      const variables = {
-        input: {
-          userId: user.id,
-          activityType: "upload_repo",
-          details: repoUrl,
-        },
-      };
-      const data = await graphqlRequest<{
-        createActivity: {
-          success: boolean;
-          activity: Activity;
-          error: string | null;
-        };
-      }>(mutation, variables, token);
-
-      if (data.createActivity.success && data.createActivity.activity) {
-        setActivities((prev) => [...prev, data.createActivity.activity]);
-        setUploadDialogOpen(false);
-        setRepoUrl("");
-      } else {
-        setError(data.createActivity.error || "Upload failed");
-      }
-    } catch (err: any) {
-      setError(err.message || "Upload failed");
-    }
-  };
+  // Upload Repository
 
   if (loading) return <Loader text="Loading Dashboard" size={220} />;
 
@@ -429,7 +391,6 @@ function DashboardContent() {
             </div>
             <DialogFooter>
               <Button onClick={() => setUploadDialogOpen(false)}>Cancel</Button>
-              <Button onClick={handleUpload}>Upload</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -440,7 +401,7 @@ function DashboardContent() {
   );
 }
 
-// --- Shared GraphQL request utility ---
+// Shared GraphQL Request Utility
 async function graphqlRequest<T>(
   query: string,
   variables?: Record<string, any>,
