@@ -7,7 +7,6 @@ from core.routes.oauth import router as oauth_router
 from core.routes.activity import ActivityMutationType
 from core.dependencies.db import get_db, Base, engine
 from config.settings import settings
-from middleware.response_modification import ResponseModificationMiddleware
 from services.activity_service import ActivityService
 from core.permissions import validate_api_key, get_current_user_from_token, require_role, UserRole
 from core.models.user import User
@@ -29,7 +28,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.add_middleware(ResponseModificationMiddleware)
+
 
 # --- DB Initialization ---
 
