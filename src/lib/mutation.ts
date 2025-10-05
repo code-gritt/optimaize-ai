@@ -7,6 +7,14 @@ interface User {
   credits: number;
 }
 
+interface Activity {
+  id: number;
+  user_id: number;
+  activity_type: string;
+  details: string | null;
+  timestamp: string;
+}
+
 // Generic fetch function
 async function graphqlRequest<T>(
   query: string,
