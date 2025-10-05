@@ -32,9 +32,12 @@ async def startup_event():
     Base.metadata.create_all(bind=engine)
 
 # --- Combined GraphQL Schema ---
+# Fix: Use the Mutation class from auth.py and combine with ActivityMutationType
+CombinedMutation = strawberry.union(
+    "Mutation", (auth.Mutation, ActivityMutationType))
 schema = strawberry.Schema(
     query=auth.Query,
-    mutation=ActivityMutationType  # Combine with existing auth mutations if any
+    mutation=CombinedMutation  # Use the combined mutation type
 )
 
 # --- GraphQL Router with DB context ---
