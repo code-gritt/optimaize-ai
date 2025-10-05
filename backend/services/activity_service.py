@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from core.models.activity import Activity
 from core.types import ActivityType
+from core.tasks import log_audit
 
 
 class ActivityService:
@@ -13,4 +14,7 @@ class ActivityService:
         self.db.add(activity)
         self.db.commit()
         self.db.refresh(activity)
-        return ActivityType(**activity.__dict__)
+        # Create a copy to avoid SQLAlchemy issues
+        activity_dict = activity.__dict__.copy()
+        log_audit.delay(activity_dict)  # Trigger background task
+        return ActivityType(**activity_dict)
