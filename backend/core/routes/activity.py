@@ -4,7 +4,7 @@ import strawberry
 from strawberry import mutation
 from core.models.activity import Activity
 from core.dependencies.db import get_db
-from core.types import ActivityType
+from core.types import ActivityType  # Strawberry type for Activity
 
 router = APIRouter()
 
@@ -64,6 +64,7 @@ class ActivityMutation:
 
             db.commit()
             db.refresh(activity)
+
             return ActivityResponse(
                 success=True,
                 activity=ActivityType.from_orm(activity),

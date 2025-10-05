@@ -12,7 +12,7 @@ import { Navbar } from "@/components";
 import ReactMarkdown from "react-markdown";
 
 export default function UploadPage() {
-  const { token, user } = useAuthStore();
+  const { token } = useAuthStore();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -39,8 +39,6 @@ export default function UploadPage() {
       const result = await uploadUrl(repoUrl, token!);
       if (result.success) {
         setAnalysis(result.analysis);
-        // Optionally redirect to dashboard to see the new activity
-        router.push("/dashboard");
       } else {
         setError(result.error || "Upload failed");
       }
@@ -58,7 +56,9 @@ export default function UploadPage() {
       <Navbar />
       <div className="container mx-auto py-10">
         <h1 className="text-2xl font-semibold mb-4">Upload Repository</h1>
+
         {error && <p className="text-red-500 mb-4">{error}</p>}
+
         {analysis && (
           <div className="mb-6 p-4 bg-gray-800 rounded-md">
             <h2 className="text-xl font-semibold mb-2">Analysis Result</h2>
@@ -67,6 +67,7 @@ export default function UploadPage() {
             </div>
           </div>
         )}
+
         <div className="grid gap-4 max-w-md">
           <Label htmlFor="repo-url">Repository URL</Label>
           <Input
