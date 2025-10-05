@@ -8,6 +8,7 @@ from typing import Optional
 from enum import Enum
 
 from core.models.user import User, UserRole
+from core.models.activity import Activity  # Add import for Activity model
 from core.dependencies.db import get_db
 
 # ----------------- Config -----------------
@@ -28,15 +29,17 @@ def create_access_token(data: dict) -> str:
 def get_user_by_email(db: Session, email: str) -> Optional[User]:
     return db.query(User).filter(User.email == email).first()
 
-
 # ----------------- Strawberry Enum -----------------
+
+
 @strawberry.enum
 class UserRoleEnum(Enum):
     USER = UserRole.USER.value
     ADMIN = UserRole.ADMIN.value
 
-
 # ----------------- Strawberry Types -----------------
+
+
 @strawberry.type
 class UserType:
     id: int
@@ -46,12 +49,22 @@ class UserType:
 
 
 @strawberry.type
+class ActivityType:
+    id: int
+    user_id: int
+    activity_type: str
+    details: str | None
+    timestamp: datetime
+
+
+@strawberry.type
 class AuthPayload:
     token: str
     user: UserType
 
-
 # ----------------- Mutations -----------------
+
+
 @strawberry.type
 class Mutation:
     @strawberry.mutation
@@ -98,8 +111,9 @@ class Mutation:
             ),
         )
 
-
 # ----------------- Queries -----------------
+
+
 @strawberry.type
 class Query:
     @strawberry.field
@@ -132,3 +146,11 @@ class Query:
 
         except JWTError:
             raise HTTPException(status_code=401, detail="Invalid token")
+
+    # New: Add activities query
+    @strawberry.field
+    def activities(self, info: Info, userId: int) -> list[ActivityType]:
+        db: Session = info.context["db"]
+        activities = db.query(Activity).filter(
+            Activity.user_id == userId).all()
+        return [ActivityType(**activity.__dict__) for activity in activities]
