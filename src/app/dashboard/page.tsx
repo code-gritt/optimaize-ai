@@ -91,10 +91,10 @@ function DashboardContent() {
 
     const fetchActivities = async (authToken: string | null) => {
       const query = `
-        query {
-          activities(userId: ${user!.id}) {
+        query GetActivities($userId: Int!) {
+          activities(userId: $userId) {
             id
-            userId  // Updated to camelCase
+            userId
             activity_type
             details
             timestamp
@@ -102,9 +102,11 @@ function DashboardContent() {
         }
       `;
       try {
+        const variables = { userId: user!.id }; // Pass as a variable
+        console.log("Query being sent:", query, variables); // Debug log
         const data = await graphqlRequest<{ activities: Activity[] }>(
           query,
-          undefined,
+          variables,
           authToken || undefined // Convert null to undefined for graphqlRequest
         );
         setActivities(data.activities || []);
@@ -134,7 +136,7 @@ function DashboardContent() {
     setSelectedActivity(activity);
     setEditForm({
       id: activity.id,
-      userId: activity.userId, // Updated to camelCase
+      userId: activity.userId,
       activity_type: activity.activity_type,
       details: activity.details || "",
       timestamp: activity.timestamp,
@@ -177,7 +179,7 @@ function DashboardContent() {
           activity: Activity;
           error: string | null;
         };
-      }>(mutation, variables, token || undefined); // Convert null to undefined
+      }>(mutation, variables, token || undefined);
       if (data.updateActivity.success) {
         setActivities(
           activities.map((a) =>
@@ -213,7 +215,7 @@ function DashboardContent() {
       const variables = { id: selectedActivity.id };
       const data = await graphqlRequest<{
         deleteActivity: { success: boolean; error: string | null };
-      }>(mutation, variables, token || undefined); // Convert null to undefined
+      }>(mutation, variables, token || undefined);
       if (data.deleteActivity.success) {
         setActivities(activities.filter((a) => a.id !== selectedActivity.id));
         setDeleteDialogOpen(false);
@@ -244,7 +246,7 @@ function DashboardContent() {
     try {
       const variables = {
         input: {
-          user_id: user!.id, // Keeping snake_case here as per input definition
+          user_id: user!.id,
           activity_type: "upload_repo",
           details: repoUrl,
         },
@@ -255,7 +257,7 @@ function DashboardContent() {
           activity: Activity;
           error: string | null;
         };
-      }>(mutation, variables, token || undefined); // Convert null to undefined
+      }>(mutation, variables, token || undefined);
       if (data.createActivity.success) {
         setActivities([...activities, data.createActivity.activity]);
         setUploadDialogOpen(false);
@@ -312,8 +314,7 @@ function DashboardContent() {
                   <TableCell>{activity.id}</TableCell>
                   <TableCell>
                     <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center">
-                      {activity.userId.toString().charAt(0).toUpperCase()}{" "}
-                      {/* Updated to camelCase */}
+                      {activity.userId.toString().charAt(0).toUpperCase()}
                     </div>
                   </TableCell>
                   <TableCell>
