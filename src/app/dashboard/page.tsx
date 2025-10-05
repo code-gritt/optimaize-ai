@@ -26,7 +26,6 @@ import { Edit, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-// ✅ Updated interface using camelCase (matches GraphQL schema)
 interface Activity {
   id: number;
   userId: number;
@@ -76,6 +75,7 @@ function DashboardContent() {
     const fetchUserAndActivities = async (authToken: string | null) => {
       try {
         if (!user?.id) throw new Error("User ID not available");
+
         const userData = await getMe(authToken!);
         setAuth(userData, authToken!);
         await fetchActivities(authToken);
@@ -126,36 +126,32 @@ function DashboardContent() {
     }
   }, [token, searchParams, router, setAuth, clearAuth, user?.id]);
 
+  // --- Logout ---
   const handleLogout = () => {
     clearAuth();
     router.push("/auth/sign-in");
   };
 
+  // --- Edit Activity ---
   const handleEdit = (activity: Activity) => {
     setSelectedActivity(activity);
     setEditForm({
-      id: activity.id,
-      userId: activity.userId,
-      activityType: activity.activityType,
+      ...activity,
       details: activity.details || "",
-      timestamp: activity.timestamp,
     });
     setEditDialogOpen(true);
   };
 
-  const handleDelete = (activity: Activity) => {
-    setSelectedActivity(activity);
-    setDeleteDialogOpen(true);
-  };
-
   const saveEdit = async () => {
-    if (!selectedActivity) return;
+    if (!selectedActivity || !token) return;
+
     const mutation = `
       mutation UpdateActivity($input: UpdateActivityInput!) {
         updateActivity(input: $input) {
           success
           activity {
             id
+            userId
             activityType
             details
             timestamp
@@ -172,25 +168,19 @@ function DashboardContent() {
           details: editForm.details,
         },
       };
+
       const data = await graphqlRequest<{
         updateActivity: {
           success: boolean;
           activity: Activity;
           error: string | null;
         };
-      }>(mutation, variables, token || undefined);
+      }>(mutation, variables, token);
 
-      if (data.updateActivity.success) {
-        setActivities(
-          activities.map((a) =>
-            a.id === selectedActivity.id
-              ? {
-                  ...a,
-                  activityType: editForm.activityType,
-                  details: editForm.details,
-                }
-              : a
-          )
+      if (data.updateActivity.success && data.updateActivity.activity) {
+        const updated = data.updateActivity.activity;
+        setActivities((prev) =>
+          prev.map((a) => (a.id === updated.id ? updated : a))
         );
         setEditDialogOpen(false);
       } else {
@@ -201,8 +191,15 @@ function DashboardContent() {
     }
   };
 
+  // --- Delete Activity ---
+  const handleDelete = (activity: Activity) => {
+    setSelectedActivity(activity);
+    setDeleteDialogOpen(true);
+  };
+
   const confirmDelete = async () => {
-    if (!selectedActivity) return;
+    if (!selectedActivity || !token) return;
+
     const mutation = `
       mutation DeleteActivity($id: Int!) {
         deleteActivity(id: $id) {
@@ -215,9 +212,12 @@ function DashboardContent() {
       const variables = { id: selectedActivity.id };
       const data = await graphqlRequest<{
         deleteActivity: { success: boolean; error: string | null };
-      }>(mutation, variables, token || undefined);
+      }>(mutation, variables, token);
+
       if (data.deleteActivity.success) {
-        setActivities(activities.filter((a) => a.id !== selectedActivity.id));
+        setActivities((prev) =>
+          prev.filter((a) => a.id !== selectedActivity.id)
+        );
         setDeleteDialogOpen(false);
       } else {
         setError(data.deleteActivity.error || "Delete failed");
@@ -227,14 +227,17 @@ function DashboardContent() {
     }
   };
 
+  // --- Upload Repo ---
   const handleUpload = async () => {
-    if (!repoUrl) return;
+    if (!repoUrl || !token || !user) return;
+
     const mutation = `
       mutation CreateActivity($input: CreateActivityInput!) {
         createActivity(input: $input) {
           success
           activity {
             id
+            userId
             activityType
             details
             timestamp
@@ -246,7 +249,7 @@ function DashboardContent() {
     try {
       const variables = {
         input: {
-          userId: user!.id,
+          userId: user.id,
           activityType: "upload_repo",
           details: repoUrl,
         },
@@ -257,9 +260,10 @@ function DashboardContent() {
           activity: Activity;
           error: string | null;
         };
-      }>(mutation, variables, token || undefined);
-      if (data.createActivity.success) {
-        setActivities([...activities, data.createActivity.activity]);
+      }>(mutation, variables, token);
+
+      if (data.createActivity.success && data.createActivity.activity) {
+        setActivities((prev) => [...prev, data.createActivity.activity]);
         setUploadDialogOpen(false);
         setRepoUrl("");
       } else {
@@ -270,18 +274,14 @@ function DashboardContent() {
     }
   };
 
-  // ✅ Show loader while loading, similar to SignInForm
-  if (loading) {
-    return <Loader text="Loading Dashboard" size={220} />;
-  }
+  if (loading) return <Loader text="Loading Dashboard" size={220} />;
 
-  if (!user) {
+  if (!user)
     return (
       <div className="flex items-center justify-center h-screen">
         <p className="text-red-500 text-center">{error || "User not found."}</p>
       </div>
     );
-  }
 
   return (
     <>
@@ -291,15 +291,15 @@ function DashboardContent() {
           Welcome, {user.email.split("@")[0]}!
         </h1>
         <p className="text-gray-500 mb-6">Credits: {user.credits}</p>
+
         <div className="mb-4 flex gap-2">
           <Button onClick={() => router.push("/")} variant="outline">
             Back to Home
           </Button>
-          <Button onClick={() => router.push("/upload")} className="ml-2">
-            Upload
-          </Button>
+          <Button onClick={() => router.push("/upload")}>Upload</Button>
           <Button onClick={() => setUploadDialogOpen(true)}>Upload Repo</Button>
         </div>
+
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -440,7 +440,7 @@ function DashboardContent() {
   );
 }
 
-// ✅ Shared GraphQL request utility
+// --- Shared GraphQL request utility ---
 async function graphqlRequest<T>(
   query: string,
   variables?: Record<string, any>,

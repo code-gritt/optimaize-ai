@@ -1,11 +1,10 @@
 from fastapi import APIRouter
-from strawberry import mutation
+from sqlalchemy.orm import Session
 import strawberry
+from strawberry import mutation
 from core.models.activity import Activity
 from core.dependencies.db import get_db
-from sqlalchemy.orm import Session
-from datetime import datetime
-from core.types import ActivityType  # Import from new types file
+from core.types import ActivityType  # Strawberry type for Activity
 
 router = APIRouter()
 
@@ -41,7 +40,11 @@ class ActivityMutation:
             db.add(activity)
             db.commit()
             db.refresh(activity)
-            return ActivityResponse(success=True, activity=ActivityType(**activity.__dict__), error=None)
+            return ActivityResponse(
+                success=True,
+                activity=ActivityType.from_orm(activity),
+                error=None
+            )
         except Exception as e:
             db.rollback()
             return ActivityResponse(success=False, activity=None, error=str(e))
@@ -54,12 +57,19 @@ class ActivityMutation:
                 Activity.id == input.id).first()
             if not activity:
                 return ActivityResponse(success=False, activity=None, error="Activity not found")
+
             for key, value in input.__dict__.items():
                 if key != "id" and value is not None:
                     setattr(activity, key, value)
+
             db.commit()
             db.refresh(activity)
-            return ActivityResponse(success=True, activity=ActivityType(**activity.__dict__), error=None)
+
+            return ActivityResponse(
+                success=True,
+                activity=ActivityType.from_orm(activity),
+                error=None
+            )
         except Exception as e:
             db.rollback()
             return ActivityResponse(success=False, activity=None, error=str(e))
@@ -71,6 +81,7 @@ class ActivityMutation:
             activity = db.query(Activity).filter(Activity.id == id).first()
             if not activity:
                 return ActivityResponse(success=False, activity=None, error="Activity not found")
+
             db.delete(activity)
             db.commit()
             return ActivityResponse(success=True, activity=None, error=None)
@@ -79,5 +90,5 @@ class ActivityMutation:
             return ActivityResponse(success=False, activity=None, error=str(e))
 
 
-# Export mutation class for schema combination
+# Export for schema combination
 ActivityMutationType = ActivityMutation
