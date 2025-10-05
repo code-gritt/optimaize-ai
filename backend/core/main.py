@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from strawberry.fastapi import GraphQLRouter
 import strawberry
@@ -8,9 +8,7 @@ from core.routes.activity import ActivityMutationType
 from core.dependencies.db import get_db, Base, engine
 from config.settings import settings
 from services.activity_service import ActivityService
-from core.permissions import validate_api_key, get_current_user_from_token, require_role, UserRole
-from core.models.user import User
-from core.types import UserType, ActivityType
+from core.types import ActivityType
 
 # --- FastAPI App ---
 app = FastAPI(title=settings.PROJECT_NAME, version=settings.VERSION)
@@ -29,7 +27,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 # --- DB Initialization ---
 
 
@@ -37,18 +34,19 @@ app.add_middleware(
 async def startup_event():
     Base.metadata.create_all(bind=engine)
 
-
 # --- Strawberry GraphQL context ---
+
+
 def get_context(request: Request):
     db = next(get_db())
     try:
-        user = get_current_user_from_token(request, db)
-        return {"db": db, "user": user, "request": request}
+        return {"db": db, "request": request}
     finally:
         db.close()
 
-
 # --- Combined GraphQL schema ---
+
+
 @strawberry.type
 class CombinedMutation(auth.Mutation, ActivityMutationType):
 
@@ -70,8 +68,6 @@ class CombinedMutation(auth.Mutation, ActivityMutationType):
     @strawberry.mutation
     def delete_all_activities(self, info) -> bool:
         db = info.context["db"]
-        user: User = info.context["user"]
-        require_role(user, UserRole.ADMIN)
         db.query(auth.Activity).delete()
         db.commit()
         return True
@@ -92,8 +88,9 @@ graphql_app = GraphQLRouter(
 app.include_router(graphql_app, prefix="/graphql")
 app.include_router(oauth_router, prefix="/oauth")
 
-
 # --- Health Check ---
+
+
 @app.get("/", tags=["Health"])
 def root():
     return {"message": "🚀 Optimaize GraphQL API running successfully"}
