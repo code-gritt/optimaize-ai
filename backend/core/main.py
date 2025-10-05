@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from strawberry.fastapi import GraphQLRouter
 import strawberry
@@ -9,9 +9,9 @@ from core.dependencies.db import get_db, Base, engine
 from config.settings import settings
 from middleware.response_modification import ResponseModificationMiddleware
 from services.activity_service import ActivityService
-from core.permissions import api_key_auth, get_current_user, check_role, UserRole
-from core.tasks import log_audit  # Ensure task is imported for Celery
+from core.permissions import validate_api_key, get_current_user_from_token, require_role, UserRole
 from core.models.user import User
+from core.types import UserType, ActivityType
 
 # --- FastAPI App ---
 app = FastAPI(title=settings.PROJECT_NAME, version=settings.VERSION)
@@ -29,71 +29,72 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# --- Custom Middleware ---
 app.add_middleware(ResponseModificationMiddleware)
 
-# --- Initialize DB ---
+# --- DB Initialization ---
 
 
 @app.on_event("startup")
 async def startup_event():
     Base.metadata.create_all(bind=engine)
 
-# --- Combined GraphQL Schema ---
+
+# --- Strawberry GraphQL context ---
+def get_context(request: Request):
+    db = next(get_db())
+    try:
+        user = get_current_user_from_token(request, db)
+        return {"db": db, "user": user, "request": request}
+    finally:
+        db.close()
 
 
+# --- Combined GraphQL schema ---
 @strawberry.type
 class CombinedMutation(auth.Mutation, ActivityMutationType):
+
     @strawberry.mutation
-    async def create_activity_with_service(
+    def create_activity_with_service(
         self, info, user_id: int, activity_type: str, details: str | None
-    ) -> auth.ActivityType:
+    ) -> ActivityType:
         db = info.context["db"]
         service = ActivityService(db)
         activity = service.create_activity(user_id, activity_type, details)
-        return activity
+        return ActivityType(
+            id=activity.id,
+            user_id=activity.user_id,
+            activity_type=activity.activity_type,
+            details=activity.details,
+            timestamp=activity.timestamp
+        )
 
     @strawberry.mutation
-    async def delete_all_activities(self, info) -> bool:
+    def delete_all_activities(self, info) -> bool:
         db = info.context["db"]
-        user = info.context["user"]
-        check_role(UserRole.ADMIN, user)  # Check role using context
+        user: User = info.context["user"]
+        require_role(user, UserRole.ADMIN)
         db.query(auth.Activity).delete()
         db.commit()
         return True
 
 
-# --- GraphQL Schema ---
+# --- Strawberry GraphQL schema & router ---
 schema = strawberry.Schema(
     query=auth.Query,
     mutation=CombinedMutation
 )
 
-# --- GraphQL Router with DB context and Security ---
-
-
-def get_context(user: User = Depends(get_current_user)):
-    db = next(get_db())
-    try:
-        return {"db": db, "user": user}
-    finally:
-        db.close()
-
-
 graphql_app = GraphQLRouter(
     schema,
-    context_getter=get_context,
-    dependencies=[Depends(api_key_auth)]
+    context_getter=get_context
 )
-app.include_router(graphql_app, prefix="/graphql")
 
-# --- OAuth Router ---
+# --- Include Routers ---
+app.include_router(graphql_app, prefix="/graphql")
 app.include_router(oauth_router, prefix="/oauth")
 
-# --- Health Check Route ---
 
-
+# --- Health Check ---
 @app.get("/", tags=["Health"])
 def root():
     return {"message": "🚀 Optimaize GraphQL API running successfully"}

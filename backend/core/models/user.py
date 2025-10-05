@@ -4,15 +4,12 @@ from enum import Enum as PyEnum
 
 Base = declarative_base()
 
-# --- ✅ SQLAlchemy Enum for user roles ---
-
 
 class UserRole(PyEnum):
     USER = "user"
     ADMIN = "admin"
 
 
-# --- ✅ SQLAlchemy ORM Model ---
 class User(Base):
     __tablename__ = "users"
 
