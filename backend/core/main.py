@@ -9,6 +9,7 @@ from core.dependencies.db import get_db, Base, engine
 from config.settings import settings
 from services.activity_service import ActivityService
 from core.types import ActivityType
+from core.routes.upload import UploadMutation  # Import new mutation
 
 # --- FastAPI App ---
 app = FastAPI(title=settings.PROJECT_NAME, version=settings.VERSION)
@@ -48,29 +49,9 @@ def get_context(request: Request):
 
 
 @strawberry.type
-class CombinedMutation(auth.Mutation, ActivityMutationType):
-
-    @strawberry.mutation
-    def create_activity_with_service(
-        self, info, user_id: int, activity_type: str, details: str | None
-    ) -> ActivityType:
-        db = info.context["db"]
-        service = ActivityService(db)
-        activity = service.create_activity(user_id, activity_type, details)
-        return ActivityType(
-            id=activity.id,
-            user_id=activity.user_id,
-            activity_type=activity.activity_type,
-            details=activity.details,
-            timestamp=activity.timestamp
-        )
-
-    @strawberry.mutation
-    def delete_all_activities(self, info) -> bool:
-        db = info.context["db"]
-        db.query(auth.Activity).delete()
-        db.commit()
-        return True
+# Include UploadMutation
+class CombinedMutation(auth.Mutation, ActivityMutationType, UploadMutation):
+    pass
 
 
 # --- Strawberry GraphQL schema & router ---

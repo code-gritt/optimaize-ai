@@ -15,6 +15,12 @@ interface Activity {
   timestamp: string;
 }
 
+interface UploadResponse {
+  success: boolean;
+  analysis: string;
+  error?: string;
+}
+
 // Generic fetch function
 async function graphqlRequest<T>(
   query: string,
@@ -88,4 +94,26 @@ export async function getMe(token: string): Promise<User> {
   const data = await graphqlRequest<{ me: User }>(query, undefined, token);
   if (!data.me) throw new Error("Failed to fetch user data");
   return data.me;
+}
+
+export async function uploadUrl(
+  url: string,
+  token: string
+): Promise<UploadResponse> {
+  const query = `
+    mutation UploadUrl($input: UploadInput!) {
+      uploadUrl(input: $input) {
+        success
+        analysis
+        error
+      }
+    }
+  `;
+  const data = await graphqlRequest<{ uploadUrl: UploadResponse }>(
+    query,
+    { input: { url } },
+    token
+  );
+  if (!data.uploadUrl) throw new Error("Upload failed: No data returned");
+  return data.uploadUrl;
 }

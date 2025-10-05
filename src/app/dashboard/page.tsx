@@ -295,8 +295,8 @@ function DashboardContent() {
           <Button onClick={() => router.push("/")} variant="outline">
             Back to Home
           </Button>
-          <Button onClick={handleLogout} className="ml-2">
-            Sign Out
+          <Button onClick={() => router.push("/upload")} className="ml-2">
+            Upload
           </Button>
           <Button onClick={() => setUploadDialogOpen(true)}>Upload Repo</Button>
         </div>

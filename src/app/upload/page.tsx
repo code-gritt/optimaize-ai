@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store";
+import { uploadUrl } from "@/lib/mutation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,6 +18,7 @@ export default function UploadPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [repoUrl, setRepoUrl] = useState("");
+  const [analysis, setAnalysis] = useState("");
 
   useEffect(() => {
     if (!token) {
@@ -31,50 +33,14 @@ export default function UploadPage() {
     }
     setLoading(true);
     setError("");
-
-    const mutation = `
-      mutation CreateActivity($input: CreateActivityInput!) {
-        createActivity(input: $input) {
-          success
-          activity {
-            id
-            activity_type
-            details
-            timestamp
-          }
-          error
-        }
-      }
-    `;
+    setAnalysis("");
 
     try {
-      const variables = {
-        input: {
-          user_id: user!.id,
-          activity_type: "upload_repo",
-          details: repoUrl,
-        },
-      };
-      const response = await fetch(GRAPHQL_API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ query: mutation, variables }),
-      });
-
-      const result = await response.json();
-      if (result.errors) {
-        throw new Error(result.errors[0].message);
-      }
-
-      const data = result.data.createActivity;
-      if (data.success) {
-        alert("Upload successful!");
-        setRepoUrl("");
+      const result = await uploadUrl(repoUrl, token!);
+      if (result.success) {
+        setAnalysis(result.analysis);
       } else {
-        setError(data.error || "Upload failed");
+        setError(result.error || "Upload failed");
       }
     } catch (err: any) {
       setError(err.message || "An error occurred during upload");
@@ -91,16 +57,22 @@ export default function UploadPage() {
       <div className="container mx-auto py-10">
         <h1 className="text-2xl font-semibold mb-4">Upload Repository</h1>
         {error && <p className="text-red-500 mb-4">{error}</p>}
+        {analysis && (
+          <div className="mb-4 p-4 bg-gray-800 rounded-md">
+            <h2 className="text-xl font-semibold mb-2">Analysis Result</h2>
+            <p className="text-gray-300">{analysis}</p>
+          </div>
+        )}
         <div className="grid gap-4 max-w-md">
           <Label htmlFor="repo-url">Repository URL</Label>
           <Input
             id="repo-url"
             value={repoUrl}
             onChange={(e) => setRepoUrl(e.target.value)}
-            placeholder="Enter repository URL"
+            placeholder="Enter repository URL (e.g., raw GitHub link)"
           />
           <Button onClick={handleUpload} disabled={loading}>
-            {loading ? "Uploading..." : "Upload"}
+            {loading ? "Uploading..." : "Upload and Analyze"}
           </Button>
           <Button variant="outline" onClick={() => router.push("/dashboard")}>
             Back to Dashboard
