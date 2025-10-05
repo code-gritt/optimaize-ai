@@ -5,17 +5,9 @@ from core.models.activity import Activity
 from core.dependencies.db import get_db
 from sqlalchemy.orm import Session
 from datetime import datetime
+from core.types import ActivityType  # Import from new types file
 
 router = APIRouter()
-
-
-@strawberry.type
-class ActivityType:
-    id: int
-    user_id: int
-    activity_type: str
-    details: str | None
-    timestamp: datetime
 
 
 @strawberry.type

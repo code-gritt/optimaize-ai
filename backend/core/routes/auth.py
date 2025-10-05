@@ -8,8 +8,9 @@ from typing import Optional
 from enum import Enum
 
 from core.models.user import User, UserRole
-from core.models.activity import Activity  # Add import for Activity model
+from core.models.activity import Activity
 from core.dependencies.db import get_db
+from core.types import ActivityType  # Import from new types file
 
 # ----------------- Config -----------------
 SECRET_KEY = "cbc939eedd96ed9e6b5e0c60712dc29cf9d4eacbde45d0c0b0066e87b51bde7d"
@@ -46,15 +47,6 @@ class UserType:
     email: str
     role: UserRoleEnum
     credits: int
-
-
-@strawberry.type
-class ActivityType:
-    id: int
-    user_id: int
-    activity_type: str
-    details: str | None
-    timestamp: datetime
 
 
 @strawberry.type
