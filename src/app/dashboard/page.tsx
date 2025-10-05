@@ -26,7 +26,7 @@ import { Edit, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-// ✅ Updated Activity interface to use camelCase
+// ✅ Updated interface using camelCase (matches GraphQL schema)
 interface Activity {
   id: number;
   userId: number;
@@ -55,6 +55,7 @@ function DashboardContent() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(
     null
   );
@@ -65,7 +66,6 @@ function DashboardContent() {
     details: "",
     timestamp: "",
   });
-  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [repoUrl, setRepoUrl] = useState("");
 
   useEffect(() => {
@@ -179,6 +179,7 @@ function DashboardContent() {
           error: string | null;
         };
       }>(mutation, variables, token || undefined);
+
       if (data.updateActivity.success) {
         setActivities(
           activities.map((a) =>
@@ -269,7 +270,10 @@ function DashboardContent() {
     }
   };
 
-  if (loading) return null;
+  // ✅ Show loader while loading, similar to SignInForm
+  if (loading) {
+    return <Loader text="Loading Dashboard" size={220} />;
+  }
 
   if (!user) {
     return (
@@ -436,7 +440,7 @@ function DashboardContent() {
   );
 }
 
-// Generic GraphQL request function
+// ✅ Shared GraphQL request utility
 async function graphqlRequest<T>(
   query: string,
   variables?: Record<string, any>,
