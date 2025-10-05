@@ -10,6 +10,7 @@ from config.settings import settings
 from middleware.response_modification import ResponseModificationMiddleware
 from services.activity_service import ActivityService
 from core.permissions import api_key_auth, get_current_user, check_role, UserRole
+from core.tasks import log_audit  # Ensure task is imported for Celery
 from core.models.user import User
 
 # --- FastAPI App ---
@@ -50,7 +51,8 @@ class CombinedMutation(auth.Mutation, ActivityMutationType):
     ) -> auth.ActivityType:
         db = info.context["db"]
         service = ActivityService(db)
-        return service.create_activity(user_id, activity_type, details)
+        activity = service.create_activity(user_id, activity_type, details)
+        return activity
 
     @strawberry.mutation
     async def delete_all_activities(self, info) -> bool:
