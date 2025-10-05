@@ -9,11 +9,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Loader from "@/components/global/loader";
 import { Navbar } from "@/components";
-
-const GRAPHQL_API_URL = "https://optimaize-api.onrender.com/graphql";
+import ReactMarkdown from "react-markdown";
 
 export default function UploadPage() {
-  const { user, token, clearAuth } = useAuthStore();
+  const { token } = useAuthStore();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -31,6 +30,7 @@ export default function UploadPage() {
       setError("Please enter a repository URL");
       return;
     }
+
     setLoading(true);
     setError("");
     setAnalysis("");
@@ -56,13 +56,18 @@ export default function UploadPage() {
       <Navbar />
       <div className="container mx-auto py-10">
         <h1 className="text-2xl font-semibold mb-4">Upload Repository</h1>
+
         {error && <p className="text-red-500 mb-4">{error}</p>}
+
         {analysis && (
-          <div className="mb-4 p-4 bg-gray-800 rounded-md">
+          <div className="mb-6 p-4 bg-gray-800 rounded-md">
             <h2 className="text-xl font-semibold mb-2">Analysis Result</h2>
-            <p className="text-gray-300">{analysis}</p>
+            <div className="text-gray-300 whitespace-pre-wrap">
+              <ReactMarkdown>{analysis}</ReactMarkdown>
+            </div>
           </div>
         )}
+
         <div className="grid gap-4 max-w-md">
           <Label htmlFor="repo-url">Repository URL</Label>
           <Input
