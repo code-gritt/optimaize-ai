@@ -29,7 +29,7 @@ import { Label } from "@/components/ui/label";
 // Define Activity interface
 interface Activity {
   id: number;
-  user_id: number;
+  userId: number; // Updated to camelCase to match schema
   activity_type: string;
   details: string | null;
   timestamp: string;
@@ -60,7 +60,7 @@ function DashboardContent() {
   );
   const [editForm, setEditForm] = useState<Activity>({
     id: 0,
-    user_id: 0,
+    userId: 0, // Updated to camelCase
     activity_type: "",
     details: "",
     timestamp: "",
@@ -94,7 +94,7 @@ function DashboardContent() {
         query {
           activities(userId: ${user!.id}) {
             id
-            user_id
+            userId  // Updated to camelCase
             activity_type
             details
             timestamp
@@ -134,7 +134,7 @@ function DashboardContent() {
     setSelectedActivity(activity);
     setEditForm({
       id: activity.id,
-      user_id: activity.user_id,
+      userId: activity.userId, // Updated to camelCase
       activity_type: activity.activity_type,
       details: activity.details || "",
       timestamp: activity.timestamp,
@@ -244,7 +244,7 @@ function DashboardContent() {
     try {
       const variables = {
         input: {
-          user_id: user!.id,
+          user_id: user!.id, // Keeping snake_case here as per input definition
           activity_type: "upload_repo",
           details: repoUrl,
         },
@@ -312,7 +312,8 @@ function DashboardContent() {
                   <TableCell>{activity.id}</TableCell>
                   <TableCell>
                     <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center">
-                      {activity.user_id.toString().charAt(0).toUpperCase()}
+                      {activity.userId.toString().charAt(0).toUpperCase()}{" "}
+                      {/* Updated to camelCase */}
                     </div>
                   </TableCell>
                   <TableCell>
