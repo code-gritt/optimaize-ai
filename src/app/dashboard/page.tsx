@@ -26,11 +26,11 @@ import { Edit, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-// Define Activity interface
+// ✅ Updated Activity interface to use camelCase
 interface Activity {
   id: number;
-  userId: number; // Updated to camelCase to match schema
-  activity_type: string;
+  userId: number;
+  activityType: string;
   details: string | null;
   timestamp: string;
 }
@@ -60,8 +60,8 @@ function DashboardContent() {
   );
   const [editForm, setEditForm] = useState<Activity>({
     id: 0,
-    userId: 0, // Updated to camelCase
-    activity_type: "",
+    userId: 0,
+    activityType: "",
     details: "",
     timestamp: "",
   });
@@ -76,7 +76,7 @@ function DashboardContent() {
     const fetchUserAndActivities = async (authToken: string | null) => {
       try {
         if (!user?.id) throw new Error("User ID not available");
-        const userData = await getMe(authToken!); // Non-null assertion since tokenFromUrl is validated
+        const userData = await getMe(authToken!);
         setAuth(userData, authToken!);
         await fetchActivities(authToken);
       } catch (err: any) {
@@ -95,19 +95,18 @@ function DashboardContent() {
           activities(userId: $userId) {
             id
             userId
-            activity_type
+            activityType
             details
             timestamp
           }
         }
       `;
       try {
-        const variables = { userId: user!.id }; // Pass as a variable
-        console.log("Query being sent:", query, variables); // Debug log
+        const variables = { userId: user!.id };
         const data = await graphqlRequest<{ activities: Activity[] }>(
           query,
           variables,
-          authToken || undefined // Convert null to undefined for graphqlRequest
+          authToken || undefined
         );
         setActivities(data.activities || []);
       } catch (err: any) {
@@ -137,7 +136,7 @@ function DashboardContent() {
     setEditForm({
       id: activity.id,
       userId: activity.userId,
-      activity_type: activity.activity_type,
+      activityType: activity.activityType,
       details: activity.details || "",
       timestamp: activity.timestamp,
     });
@@ -157,7 +156,7 @@ function DashboardContent() {
           success
           activity {
             id
-            activity_type
+            activityType
             details
             timestamp
           }
@@ -169,7 +168,7 @@ function DashboardContent() {
       const variables = {
         input: {
           id: selectedActivity.id,
-          activity_type: editForm.activity_type,
+          activityType: editForm.activityType,
           details: editForm.details,
         },
       };
@@ -186,7 +185,7 @@ function DashboardContent() {
             a.id === selectedActivity.id
               ? {
                   ...a,
-                  activity_type: editForm.activity_type,
+                  activityType: editForm.activityType,
                   details: editForm.details,
                 }
               : a
@@ -235,7 +234,7 @@ function DashboardContent() {
           success
           activity {
             id
-            activity_type
+            activityType
             details
             timestamp
           }
@@ -246,8 +245,8 @@ function DashboardContent() {
     try {
       const variables = {
         input: {
-          user_id: user!.id,
-          activity_type: "upload_repo",
+          userId: user!.id,
+          activityType: "upload_repo",
           details: repoUrl,
         },
       };
@@ -318,7 +317,7 @@ function DashboardContent() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    {activity.activity_type}: {activity.details || "No details"}
+                    {activity.activityType}: {activity.details || "No details"}
                   </TableCell>
                   <TableCell>
                     {new Date(activity.timestamp).toLocaleString()}
@@ -344,6 +343,8 @@ function DashboardContent() {
             </TableBody>
           </Table>
         </div>
+
+        {/* Edit Dialog */}
         <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
           <DialogContent>
             <DialogHeader>
@@ -356,9 +357,9 @@ function DashboardContent() {
                 </Label>
                 <Input
                   id="activity-type"
-                  value={editForm.activity_type}
+                  value={editForm.activityType}
                   onChange={(e) =>
-                    setEditForm({ ...editForm, activity_type: e.target.value })
+                    setEditForm({ ...editForm, activityType: e.target.value })
                   }
                   className="col-span-3"
                 />
@@ -383,6 +384,8 @@ function DashboardContent() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Delete Dialog */}
         <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
           <DialogContent>
             <DialogHeader>
@@ -399,6 +402,8 @@ function DashboardContent() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Upload Dialog */}
         <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
           <DialogContent>
             <DialogHeader>
@@ -424,6 +429,7 @@ function DashboardContent() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
         {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
       </div>
     </>
@@ -434,7 +440,7 @@ function DashboardContent() {
 async function graphqlRequest<T>(
   query: string,
   variables?: Record<string, any>,
-  token?: string // Updated to allow undefined explicitly
+  token?: string
 ): Promise<T> {
   const response = await fetch(GRAPHQL_API_URL, {
     method: "POST",
